@@ -16,4 +16,5 @@ let () =
   parse_and_print "x -@ y -@ z";
   parse_and_print "x -@ y -> z";
   parse_and_print "x -> y -@ z";
-  parse_and_print "x -> y -> z"
+  parse_and_print "x -> y -> z";
+  parse_and_print "let x : y := z in t"

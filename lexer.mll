@@ -5,6 +5,8 @@
     List.iter (fun (kwd, tok) -> Hashtbl.add keyword_table kwd tok)
     [ "fun", FUN;
       "forall", FORALL;
+      "let", LET;
+      "in", IN;
       "Type", TYPE ]
 }
 rule token =
@@ -16,6 +18,7 @@ rule token =
             Hashtbl.find keyword_table id
           with Not_found ->
             IDENT id }
+      | ":=" { EQ_ASGN }
       | "=>" { FUN_ARROW }
       | "->" { IMPL_ARROW }
       | "," { COMMA }
