@@ -20,6 +20,6 @@ Definition or_intror :
   := fun A:Type(0) => fun B:Type(0) => fun b:B =>
     fun P:Type(0) => fun f:(A -> P) => fun g:(B -> P) => g b.
 Definition and_eliml :
-    forall A:Type(0), forall B:Type(0), (and A B) -> A
+    forall A:Type(0), forall B:Type(0), and A B -> A
   := fun A:Type(0) => fun B:Type(0) => fun ab:and A B =>
     ab A (fun a:A => fun b:B => a).
