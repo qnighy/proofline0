@@ -3,7 +3,9 @@
   let keyword_table = Hashtbl.create 101
   let _ =
     List.iter (fun (kwd, tok) -> Hashtbl.add keyword_table kwd tok)
-    [ "fun", FUN;
+    [ "Definition", DEFINITION;
+      "Axiom", AXIOM;
+      "fun", FUN;
       "forall", FORALL;
       "let", LET;
       "in", IN;
@@ -23,10 +25,11 @@ rule token =
       | "->" { IMPL_ARROW }
       | "," { COMMA }
       | ":" { COLON }
+      | "." { PERIOD }
       | "-@" { LOLLI_ARROW }
       | "(" { LPAREN }
       | ")" { RPAREN }
-      | eof { EOT }
+      | eof { EOF }
 and in_comment =
   parse "(*" { in_comment lexbuf; in_comment lexbuf }
       | "*)" { () }

@@ -1,0 +1,25 @@
+Definition False : Type(0) := forall A:Type(0), A.
+Definition and : Type(0) -> Type(0) -> Type(0) :=
+  fun A:Type(0) => fun B:Type(0) =>
+    forall P:Type(0), (A -> B -> P) -> P.
+Definition or : Type(0) -> Type(0) -> Type(0) :=
+  fun A:Type(0) => fun B:Type(0) =>
+    forall P:Type(0), (A -> P) -> (B -> P) -> P.
+Definition False_elim : forall A:Type(0), False -> A
+  := fun A:Type(0) => fun f:False => f A.
+Definition and_intro :
+    forall A:Type(0), forall B:Type(0), A -> B -> and A B
+  := fun A:Type(0) => fun B:Type(0) => fun a:A => fun b:B =>
+    fun P:Type(0) => fun f:(A -> B -> P) => f a b.
+Definition or_introl :
+    forall A:Type(0), forall B:Type(0), A -> or A B
+  := fun A:Type(0) => fun B:Type(0) => fun a:A =>
+    fun P:Type(0) => fun f:(A -> P) => fun g:(B -> P) => f a.
+Definition or_intror :
+    forall A:Type(0), forall B:Type(0), B -> or A B
+  := fun A:Type(0) => fun B:Type(0) => fun b:B =>
+    fun P:Type(0) => fun f:(A -> P) => fun g:(B -> P) => g b.
+Definition and_eliml :
+    forall A:Type(0), forall B:Type(0), (and A B) -> A
+  := fun A:Type(0) => fun B:Type(0) => fun ab:and A B =>
+    ab A (fun a:A => fun b:B => a).

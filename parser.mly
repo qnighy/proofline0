@@ -1,25 +1,31 @@
 %{
   open Term
+  open Instruction
 %}
 %token <string> IDENT
 %token <int> INT
+%token DEFINITION AXIOM
 %token TYPE FUN FORALL LET IN
 %token FUN_ARROW IMPL_ARROW LOLLI_ARROW
-%token COMMA COLON
+%token COMMA COLON PERIOD
 %token LPAREN RPAREN
 %token EQ_ASGN
-%token EOT
+%token EOF
 %right IMPL_ARROW LOLLI_ARROW FUN FORALL
-%start main
-%type <Term.term_ast> main
+%start instruction
+%type <Instruction.instruction> instruction
 %type <Term.term_ast> term
 %type <Term.term_ast list> termlist
 %type <Term.term_ast> term_complex
 
 %%
 
-main:
-  | term EOT { $1 }
+instruction:
+  | EOF { EndOfInstruction }
+  | DEFINITION IDENT COLON term EQ_ASGN term PERIOD {
+      DefinitionInstruction ($2,$4,$6) }
+  | AXIOM IDENT COLON term PERIOD {
+      AxiomInstruction ($2,$4) }
 term:
   | termlist {
       List.fold_left (fun h t -> TermAstApply (h,t))
