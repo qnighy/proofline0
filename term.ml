@@ -40,3 +40,12 @@ let rec pp_print_term_ast ppf = function
   | TermAstSort u ->
       fprintf ppf "Type(%d)" u
 
+type term =
+  | TermApply of  term * term
+  | TermForall of  string * term * term
+  | TermLolli of  term * term
+  | TermFun of  string * term * term
+  | TermLetIn of  string * term * term * term
+  | TermVarRef of int
+  | TermSort of int
+

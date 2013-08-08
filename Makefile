@@ -2,6 +2,7 @@
 
 SOURCES := \
 	term.ml \
+	environment.ml \
 	parser.mly \
 	lexer.mll \
 	main.ml
