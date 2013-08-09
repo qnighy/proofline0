@@ -82,8 +82,9 @@ let rec pp_print_term env ppf = function
         (pp_print_term new_env) t2
   | TermForall (_,t1,t2,true) ->
       let new_env = env_add env "_" t1 None in
-      fprintf ppf "%a -@ %a"
+      fprintf ppf "%a -%s %a"
         (pp_print_term env) t1
+        "@"
         (pp_print_term new_env) t2
   | TermFun (v,t1,t2,false) ->
       let new_env = env_add env v t1 None in
@@ -127,8 +128,9 @@ let rec pp_print_term_literal ppf = function
         pp_print_term_literal t1
         pp_print_term_literal t2
   | TermForall (_,t1,t2,true) ->
-      fprintf ppf "%a -@ %a"
+      fprintf ppf "%a -%s %a"
         pp_print_term_literal t1
+        "@"
         pp_print_term_literal t2
   | TermFun (v,t1,t2,false) ->
       fprintf ppf "(fun :%a => %a)"
@@ -208,8 +210,7 @@ let rec check_cast env t1 t2 =
   | TermApply (t1a,t1b),TermApply (t2a,t2b) ->
       check_cast env t1a t2a;
       check_cast env t1b t2b
-  | TermForall (v1,t1a,t1b,l1),TermForall (v2,t2a,t2b,l2) ->
-      assert (l1 = l2);
+  | TermForall (v1,t1a,t1b,l1),TermForall (v2,t2a,t2b,l2) when l1 = l2 ->
       check_cast env t2a t1a;
       check_cast (env_add env v1 t1a None) t1b t2b
   | TermVarRef x1,TermVarRef x2 when x1 = x2 -> ()

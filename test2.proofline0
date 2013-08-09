@@ -1,0 +1,2 @@
+Definition hoge : forall A:Type(0), A -@ A -@ A
+  := fun A:Type(0) => fun *x:A => fun *y:A => x.

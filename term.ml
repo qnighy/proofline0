@@ -19,9 +19,9 @@ let rec pp_print_term_ast ppf = function
         pp_print_term_ast t1
         pp_print_term_ast t2
   | TermAstForall (_,t1,t2,true) ->
-      fprintf ppf "(%a %s %a)"
+      fprintf ppf "(%a -%s %a)"
         pp_print_term_ast t1
-        "-@"
+        "@"
         pp_print_term_ast t2
   | TermAstFun (v,t1,t2,false) ->
       fprintf ppf "(fun %s:%a => %a)"
