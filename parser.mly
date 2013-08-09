@@ -7,7 +7,7 @@
 %token DEFINITION AXIOM
 %token TYPE FUN FORALL LET IN
 %token FUN_ARROW IMPL_ARROW LOLLI_ARROW
-%token COMMA COLON PERIOD
+%token COMMA COLON PERIOD ASTER
 %token LPAREN RPAREN
 %token EQ_ASGN
 %token EOF
@@ -29,12 +29,15 @@ instruction:
       AxiomInstruction ($2,$4) }
 term:
   | TYPE LPAREN INT RPAREN { TermAstSort $3 }
-  | FUN IDENT COLON term FUN_ARROW term { TermAstFun ($2,$4,$6) }
+  | FUN IDENT COLON term FUN_ARROW term { TermAstFun ($2,$4,$6,false) }
+  | FUN ASTER IDENT COLON term FUN_ARROW term { TermAstFun ($3,$5,$7,true) }
   | LET IDENT COLON term EQ_ASGN term IN term {
-      TermAstLetIn ($2,$4,$6,$8) }
-  | FORALL IDENT COLON term COMMA term { TermAstForall ($2,$4,$6) }
-  | term IMPL_ARROW term { TermAstForall ("_",$1,$3) }
-  | term LOLLI_ARROW term { TermAstLolli ($1,$3) }
+      TermAstLetIn ($2,$4,$6,$8,false) }
+  | LET ASTER IDENT COLON term EQ_ASGN term IN term {
+      TermAstLetIn ($3,$5,$7,$9,true) }
+  | FORALL IDENT COLON term COMMA term { TermAstForall ($2,$4,$6,false) }
+  | term IMPL_ARROW term { TermAstForall ("_",$1,$3,false) }
+  | term LOLLI_ARROW term { TermAstForall ("_",$1,$3,true) }
   | term_single { $1 }
 term_single:
   | termlist {

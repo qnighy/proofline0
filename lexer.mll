@@ -26,6 +26,7 @@ rule token =
       | "," { COMMA }
       | ":" { COLON }
       | "." { PERIOD }
+      | "*" { ASTER }
       | "-@" { LOLLI_ARROW }
       | "(" { LPAREN }
       | ")" { RPAREN }
