@@ -229,13 +229,14 @@ let rec check_sort env t =
       (pp_print_term env) t
     )
 
-let rec check_type env t =
+let rec check_type env occ ldep t =
   match t with
   | TermApply (t1,t2) ->
-      let t1t = check_type env t1 in
-      let t2t = check_type env t2 in
+      let t1t = check_type env occ ldep t1 in
       (match reduce env t1t with
       | TermForall (v,tt1,tt2,l) ->
+          let t2t = check_type env occ
+            (if l then ldep else 0) t2 in
           check_cast env tt1 t2t;
           subst_term 0 tt2 t2
       | _ ->
@@ -244,23 +245,55 @@ let rec check_type env t =
           (pp_print_term env) t1t)
         )
   | TermForall (v,t1,t2,l) ->
-      (match reduce env (check_type env t1),
-          reduce env (check_type (env_add env v t1 None) t2) with
+      let new_occ = (if l then Some (ref false) else None)::occ in
+      (match reduce env (check_type env occ ldep t1),
+          reduce env (check_type (env_add env v t1 None)
+              new_occ (ldep+1) t2) with
       | TermSort u1,TermSort 0 -> TermSort 0
       | TermSort u1,TermSort u2 -> TermSort (max u1 u2)
       | _,_ -> assert false)
   | TermFun (v,t1,t2,l) ->
-      check_sort env (check_type env t1);
-      let l = TermForall (v,t1,check_type (env_add env v t1 None) t2,l) in
-      (match check_type env l with
-      | TermSort _ -> l
+      check_sort env (check_type env occ ldep t1);
+      let new_occ = (if l then Some (ref false) else None)::occ in
+      let new_env = env_add env v t1 None in
+      let r = TermForall
+          (v,t1,check_type new_env new_occ (ldep+1) t2,l) in
+      (match check_type env occ ldep r with
+      | TermSort _ -> ()
       | _ -> assert false
-      )
+      );
+      (match List.hd new_occ with
+      | None -> ()
+      | Some lref ->
+          if !lref then
+            ()
+          else
+            failwith (Misc.sprintf "%a is linear but unused"
+              (pp_print_term new_env) (TermVarRef 0)
+            )
+      );
+      r
   | TermLetIn (v,t1,t2,t3,l) ->
-      check_sort env (check_type env t1);
-      check_cast env (check_type env t2) t1;
-      check_type (env_add env v t1 (Some t2)) t3
+      let new_occ = (if l then Some (ref false) else None)::occ in
+      check_sort env (check_type env occ ldep t1);
+      check_cast env (check_type env occ (if l then ldep else 0) t2) t1;
+      check_type (env_add env v t1 (Some t2)) new_occ (ldep+1) t3
   | TermVarRef x ->
+      let l = try List.nth occ x with Failure _ -> None in
+      (match l with
+      | None -> ()
+      | Some lref ->
+          if x >= ldep then
+            failwith (Misc.sprintf "%a is linear but it's nonlinear context"
+              (pp_print_term env) t
+            )
+          else if !lref then
+            failwith (Misc.sprintf "%a is linear and already used"
+              (pp_print_term env) t
+            )
+          else
+            lref := true
+      );
       (match List.nth env.deflist x with
       | (_,tt,_) -> shift_term (x+1) 0 tt)
   | TermSort u -> TermSort (u+1)

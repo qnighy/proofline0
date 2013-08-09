@@ -1,36 +1,47 @@
+(* logical bottom *)
 Definition False : Type(0) := forall A:Type(0), A.
+(* logical and (A /\ B) *)
 Definition and : Type(0) -> Type(0) -> Type(0) :=
   fun A:Type(0) => fun B:Type(0) =>
     forall P:Type(0), (A -> B -> P) -> P.
+(* logical or (A \/ B) *)
 Definition or : Type(0) -> Type(0) -> Type(0) :=
   fun A:Type(0) => fun B:Type(0) =>
     forall P:Type(0), (A -> P) -> (B -> P) -> P.
+(* False -> A *)
 Definition False_elim : forall A:Type(0), False -> A
   := fun A:Type(0) => fun f:False => f A.
+(* A -> B -> A /\ B *)
 Definition and_intro :
     forall A:Type(0), forall B:Type(0), A -> B -> and A B
   := fun A:Type(0) => fun B:Type(0) => fun a:A => fun b:B =>
     fun P:Type(0) => fun f:(A -> B -> P) => f a b.
+(* A -> A \/ B *)
 Definition or_introl :
     forall A:Type(0), forall B:Type(0), A -> or A B
   := fun A:Type(0) => fun B:Type(0) => fun a:A =>
     fun P:Type(0) => fun f:(A -> P) => fun g:(B -> P) => f a.
+(* B -> A \/ B *)
 Definition or_intror :
     forall A:Type(0), forall B:Type(0), B -> or A B
   := fun A:Type(0) => fun B:Type(0) => fun b:B =>
     fun P:Type(0) => fun f:(A -> P) => fun g:(B -> P) => g b.
+(* A /\ B -> A *)
 Definition and_eliml :
     forall A:Type(0), forall B:Type(0), and A B -> A
   := fun A:Type(0) => fun B:Type(0) => fun ab:and A B =>
     ab A (fun a:A => fun b:B => a).
+(* A /\ B -> B *)
 Definition and_elimr :
     forall A:Type(0), forall B:Type(0), and A B -> B
   := fun A:Type(0) => fun B:Type(0) => fun ab:and A B =>
     ab B (fun a:A => fun b:B => b).
+(* A \/ B -> (A -> P) -> (B -> P) -> P *)
 Definition or_elim :
     forall A:Type(0), forall B:Type(0), or A B ->
       forall P:Type(0), (A -> P) -> (B -> P) -> P
   := fun A:Type(0) => fun B:Type(0) => fun ab:or A B => ab.
+(* A /\ B -> B /\ A *)
 Definition and_comm :
     forall A:Type(0), forall B:Type(0), and A B -> and B A
   := fun A:Type(0) => fun B:Type(0) => fun ab:and A B =>

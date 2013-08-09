@@ -1,2 +1,54 @@
-Definition hoge : forall A:Type(0), A -@ A -@ A
-  := fun A:Type(0) => fun *x:A => fun *y:A => x.
+(* linear "of course" operator (!A) *)
+Definition ofc : Type(0) -> Type(0)
+  := fun A:Type(0) => forall P:Type(0), (A -> P) -@ P.
+(* !A -@ A *)
+Definition ofc_elim : forall A:Type(0), ofc A -@ A
+  := fun A:Type(0) => fun *oa:ofc A =>
+      oa A (fun x:A => x).
+(* !A -@ !!A *)
+Definition ofc_introd : forall A:Type(0), ofc A -@ ofc (ofc A)
+  := fun A:Type(0) => fun *oa:ofc A =>
+      oa (ofc (ofc A)) (fun a:A =>
+        fun P:Type(0) => fun *ap:ofc A -> P =>
+          ap (fun Q:Type(0) => fun *aq:A -> Q =>
+            aq a
+          )
+      ).
+(* linear "tensor" operator (A ** B) *)
+Definition tensor : Type(0) -> Type(0) -> Type(0)
+  := fun A:Type(0) => fun B:Type(0) =>
+    forall P:Type(0), (A -@ B -@ P) -@ P.
+(* linear "with" operator (A && B) *)
+Definition with : Type(0) -> Type(0) -> Type(0)
+  := fun A:Type(0) => fun B:Type(0) =>
+    forall P:Type(0), (A -> B -> P) -@ P.
+(* !(A && B) -@ !A ** !B *)
+Definition ofc_with_tensor : forall A:Type(0), forall B:Type(0),
+    ofc (with A B) -@ tensor (ofc A) (ofc B)
+  := fun A:Type(0) => fun B:Type(0) => fun *oab:ofc (with A B) =>
+    oab (tensor (ofc A) (ofc B)) (fun ab:with A B =>
+      fun P:Type(0) => fun *abp:ofc A -@ ofc B -@ P =>
+        abp (fun Q:Type(0) => fun *aq:A -> Q =>
+          aq (
+            ab A (fun a:A => fun b:B => a)
+          )
+        ) (fun Q:Type(0) => fun *bq:B -> Q =>
+          bq (
+            ab B (fun a:A => fun b:B => b)
+          )
+        )
+    ).
+(* !A ** !B -@ !(A && B) *)
+Definition ofc_tensor_with : forall A:Type(0), forall B:Type(0),
+    tensor (ofc A) (ofc B) -@ ofc (with A B)
+  := fun A:Type(0) => fun B:Type(0) => fun *oaob:tensor (ofc A) (ofc B) =>
+    oaob (ofc (with A B)) (fun *oa:ofc A => fun *ob:ofc B =>
+      oa (ofc (with A B)) (fun a:A =>
+        ob (ofc (with A B)) (fun b:B =>
+          fun P:Type(0) => fun *abp:with A B -> P =>
+          abp (fun Q:Type(0) => fun *abq:A -> B -> Q =>
+            abq a b
+          )
+        )
+      )
+    ).
