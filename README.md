@@ -41,24 +41,24 @@ Type(universe_level)
 Prop
 ```
 
-- "t1 -> t2" is a syntax sugar for "forall _ : t1, t2".
-- "Prop" is a syntax sugar for "Type(0)".
+- ``t1 -> t2`` is a syntax sugar for ``forall _ : t1, t2``.
+- ``Prop`` is a syntax sugar for ``Type(0)``.
 
 You can't omit type annotation. There are no type inference system.
 
 
-* Semantics
+## Semantics
 
 Almost same as Coq. only difference is linear type.
 
-- type of ``fun *id : t1 => t2`` is ``A -@ B``.
-- when ``id`` is declared with asterisk, you can use ``id`` just once.
-- when ``id`` is declared with asterisk, you can't use ``id``
-  within non-linear application "t1 t2", where type of t1 is "A -> B".
+- Type of ``fun *id : t1 => t2`` is ``A -@ B``.
+- When ``id`` is declared with asterisk, you can use ``id`` just once.
+- When ``id`` is declared with asterisk, you can't use ``id``
+  within non-linear application ``t1 t2``, where type of t1 is ``A -> B``.
 
-* Samples
+## Samples
 
-- test.proofline0: church encoding of usual intuitionistic logic.
-- test2.proofine0: church encoding of intuitionistic linear logic.
+- ``test.proofline0``: church encoding of usual intuitionistic logic.
+- ``test2.proofline0``: church encoding of intuitionistic linear logic.
 
 
