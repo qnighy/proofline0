@@ -23,3 +23,15 @@ Definition and_eliml :
     forall A:Type(0), forall B:Type(0), and A B -> A
   := fun A:Type(0) => fun B:Type(0) => fun ab:and A B =>
     ab A (fun a:A => fun b:B => a).
+Definition and_elimr :
+    forall A:Type(0), forall B:Type(0), and A B -> B
+  := fun A:Type(0) => fun B:Type(0) => fun ab:and A B =>
+    ab B (fun a:A => fun b:B => b).
+Definition or_elim :
+    forall A:Type(0), forall B:Type(0), or A B ->
+      forall P:Type(0), (A -> P) -> (B -> P) -> P
+  := fun A:Type(0) => fun B:Type(0) => fun ab:or A B => ab.
+Definition and_comm :
+    forall A:Type(0), forall B:Type(0), and A B -> and B A
+  := fun A:Type(0) => fun B:Type(0) => fun ab:and A B =>
+    and_intro B A (and_elimr A B ab) (and_eliml A B ab).
