@@ -9,7 +9,8 @@
       "forall", FORALL;
       "let", LET;
       "in", IN;
-      "Type", TYPE ]
+      "Type", TYPE;
+      "Prop", PROP ]
 }
 rule token =
   parse [' ' '\t' '\n'] { token lexbuf }
